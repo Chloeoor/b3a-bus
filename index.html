@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B3A · Fu Tai Estate → Shenzhen Bay Port</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#141b31;
+    --panel-2:#1b2340;
+    --line:#2a3457;
+    --text:#eaf0ff;
+    --muted:#93a0c4;
+    --accent:#37e0a6;
+    --accent-2:#59a8ff;
+    --warn:#ffb454;
+    --err:#ff6b81;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 520px at 85% -10%, #1d2b57 0%, transparent 60%),
+      radial-gradient(900px 480px at -10% 110%, #10404a 0%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans HK","Microsoft JhengHei",sans-serif;
+    padding:28px 18px 44px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  header{display:flex;gap:16px;align-items:center;margin-bottom:22px}
+  .badge{
+    flex:0 0 auto;
+    background:linear-gradient(135deg,var(--accent-2),#7a5cff);
+    color:#06101f;
+    font-weight:800;
+    font-size:30px;
+    letter-spacing:.5px;
+    padding:12px 16px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(89,168,255,.28);
+  }
+  h1{font-size:22px;margin:0 0 4px;line-height:1.25}
+  .sub{margin:0;color:var(--muted);font-size:14px}
+
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--muted);
+    flex-wrap:wrap;
+  }
+  .toolbar strong{color:var(--text);font-variant-numeric:tabular-nums}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:middle}
+  .dot.busy{background:var(--warn);animation:pulse 1s infinite}
+  .dot.bad{background:var(--err)}
+  @keyframes pulse{50%{opacity:.35}}
+  button{
+    background:var(--panel-2);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;
+  }
+  button:hover{border-color:var(--accent-2);color:#fff}
+
+  .banner{
+    border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px;
+    background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.45);color:#ffd4db;
+  }
+  .banner.info{background:rgba(89,168,255,.1);border-color:rgba(89,168,255,.4);color:#d8e9ff}
+
+  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  li{
+    display:flex;align-items:center;gap:16px;
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:16px 18px;
+  }
+  li.next{
+    background:linear-gradient(135deg,rgba(55,224,166,.14),rgba(20,27,49,.9));
+    border-color:rgba(55,224,166,.5);
+    box-shadow:0 12px 34px rgba(0,0,0,.32);
+  }
+  .mins{
+    flex:0 0 108px;text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .mins .num{font-size:44px;font-weight:800;line-height:1;color:var(--accent)}
+  li.next .mins .num{color:#7dffdd}
+  .mins .unit{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:6px}
+  .mins .num.due{font-size:30px;color:var(--warn)}
+  .info{flex:1;min-width:0}
+  .info .dest{font-size:17px;font-weight:650;margin-bottom:4px}
+  .info .meta{font-size:13px;color:var(--muted)}
+  .clock{
+    flex:0 0 auto;text-align:right;font-variant-numeric:tabular-nums;
+    font-size:20px;font-weight:700;color:var(--accent-2);
+  }
+  .clock span{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+  .tag{
+    display:inline-block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:#062a1f;background:var(--accent);border-radius:999px;padding:2px 9px;margin-bottom:6px;font-weight:700;
+  }
+  .empty{
+    background:var(--panel);border:1px dashed var(--line);border-radius:16px;
+    padding:34px 20px;text-align:center;color:var(--muted);font-size:15px;
+  }
+  footer{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.7}
+  footer a{color:var(--accent-2)}
+  .skeleton{height:86px;border-radius:16px;background:linear-gradient(90deg,#141b31 25%,#1b2340 50%,#141b31 75%);background-size:400% 100%;animation:sh 1.2s infinite}
+  @keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+  @media (max-width:520px){
+    .mins{flex-basis:78px}
+    .mins .num{font-size:34px}
+    .badge{font-size:24px}
+    h1{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">B3A</div>
+    <div>
+      <h1 id="title">Fu Tai Estate → Shenzhen Bay Port</h1>
+      <p class="sub" id="subtitle">Citybus · 富泰邨 → 深圳灣口岸 · towards Shenzhen Bay Port</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div><span class="dot" id="statusDot"></span><span id="statusText">Loading live departures…</span></div>
+    <div>
+      Next refresh in <strong id="countdown">30</strong>s &nbsp;·&nbsp;
+      Updated <strong id="updated">—</strong>
+      &nbsp;<button id="refreshBtn" type="button">Refresh now</button>
+    </div>
+  </div>
+
+  <div id="banner"></div>
+
+  <ul id="list"><li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li></ul>
+
+  <footer>
+    Source: <a href="https://opendata.gov.hk/" target="_blank" rel="noopener">DATA.GOV.HK</a>
+    Citybus real-time open data (<code>rt.data.gov.hk</code>) ·
+    Stop <code>003261</code> Fu Tai Estate, Castle Peak Road ·
+    Auto-refresh every 30 seconds.
+    <br>Feed timestamp: <span id="feedTs">—</span> · times shown in Hong Kong time (UTC+8).
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Citybus open data (DATA.GOV.HK). Path shape: /eta/{company}/{stop}/{route}
+  var ETA_URL   = "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/003261/B3A";
+  var ROUTE_URL = "https://rt.data.gov.hk/v2/transport/citybus/route/CTB/B3A";
+  var STOP_URL  = "https://rt.data.gov.hk/v2/transport/citybus/stop/003261";
+  var REFRESH_MS = 30000;
+  var DEST_EN = "Shenzhen Bay Port";
+  var DEST_TC = "深圳灣口岸";
+
+  var state = {
+    rows: [],            // [{eta, eta_seq, rmk_en, rmk_tc, dest_en}]
+    loading: true,
+    error: null,
+    updated: null,
+    feedTs: null
+  };
+
+  var nextRefreshAt = Date.now() + REFRESH_MS;
+  var timer = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function hktTime(value) {
+    try {
+      return new Date(value).toLocaleTimeString("en-GB", {
+        hour: "2-digit", minute: "2-digit", timeZone: "Asia/Hong_Kong"
+      });
+    } catch (e) { return ""; }
+  }
+
+  function hktFull(value) {
+    try {
+      return new Date(value).toLocaleString("en-GB", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        day: "2-digit", month: "short", timeZone: "Asia/Hong_Kong"
+      }) + " HKT";
+    } catch (e) { return String(value); }
+  }
+
+  function clean(list) {
+    var seen = {};
+    return list
+      .filter(function (r) { return r && typeof r.eta === "string" && r.eta; })
+      // Outbound only: Fu Tai Estate -> Shenzhen Bay Port
+      .filter(function (r) { return (r.dir || "O") === "O"; })
+      .filter(function (r) {
+        return r.dest_en === DEST_EN || r.dest_tc === DEST_TC || r.dest_sc === "深圳湾口岸";
+      })
+      .filter(function (r) {
+        var t = new Date(r.eta).getTime();
+        return isFinite(t) && t > Date.now() - 60000; // drop already-departed
+      })
+      .sort(function (a, b) { return new Date(a.eta) - new Date(b.eta); })
+      .filter(function (r) {
+        if (seen[r.eta]) return false;
+        seen[r.eta] = true;
+        return true;
+      })
+      .slice(0, 5);
+  }
+
+  async function loadEta() {
+    try {
+      var res = await fetch(ETA_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      var json = await res.json();
+      state.rows = clean(Array.isArray(json.data) ? json.data : []);
+      var ts = (json.data && json.data[0] && json.data[0].data_timestamp) || json.generated_timestamp || null;
+      state.feedTs = ts || state.feedTs;
+      state.error = null;
+      state.updated = Date.now();
+    } catch (err) {
+      state.error = (err && err.message) ? err.message : String(err);
+    } finally {
+      state.loading = false;
+      nextRefreshAt = Date.now() + REFRESH_MS;
+      clearTimeout(timer);
+      timer = setTimeout(loadEta, REFRESH_MS);
+      render();
+    }
+  }
+
+  function loadMeta() {
+    // Nice-to-have: pull the official route/stop names from the same open-data API.
+    Promise.all([
+      fetch(ROUTE_URL).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(STOP_URL).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (results) {
+      var route = results[0] && results[0].data;
+      var stop  = results[1] && results[1].data;
+      if (route && route.dest_en) {
+        document.title = "B3A · Fu Tai Estate → " + route.dest_en;
+        $("title").textContent = "Fu Tai Estate → " + route.dest_en;
+      }
+      if (stop && stop.name_en) {
+        $("subtitle").textContent =
+          "Citybus · 富泰邨 → 深圳灣口岸 · boarding at " + stop.name_en;
+      }
+    });
+  }
+
+  function render() {
+    var now = Date.now();
+
+    // countdown + last updated
+    var left = Math.max(0, Math.ceil((nextRefreshAt - now) / 1000));
+    $("countdown").textContent = state.loading ? "…" : left;
+    $("updated").textContent = state.updated ? hktFull(state.updated) : "—";
+    $("feedTs").textContent = state.feedTs ? hktFull(state.feedTs) : "—";
+
+    var dot = $("statusDot");
+    var txt = $("statusText");
+    dot.className = "dot";
+    if (state.error) {
+      dot.classList.add("bad");
+      txt.textContent = "Connection problem — retrying every 30s";
+    } else if (state.loading) {
+      dot.classList.add("busy");
+      txt.textContent = "Fetching live departures…";
+    } else {
+      txt.textContent = "Live · refreshing automatically every 30 s";
+    }
+
+    var banner = $("banner");
+    if (state.error) {
+      banner.className = "banner";
+      banner.textContent = "Could not reach DATA.GOV.HK (" + state.error +
+        "). Showing the last data received; retrying automatically.";
+    } else if (!state.loading && state.rows.length === 0) {
+      banner.className = "banner info";
+      banner.textContent = "The API is reachable but returned no upcoming departures right now.";
+    } else {
+      banner.className = "banner";
+      banner.style.display = "none";
+      banner.textContent = "";
+    }
+    if (state.error || (!state.loading && state.rows.length === 0)) banner.style.display = "";
+    else banner.style.display = "none";
+
+    var list = $("list");
+    if (state.loading && state.rows.length === 0) {
+      list.innerHTML = '<li class="skeleton"></li><li class="skeleton"></li><li class="skeleton"></li>';
+      return;
+    }
+
+    if (state.rows.length === 0) {
+      list.innerHTML = '<li class="empty">No upcoming B3A buses from Fu Tai Estate at the moment.<br>' +
+        'Check back shortly — this page refreshes every 30 seconds.</li>';
+      return;
+    }
+
+    var html = "";
+    state.rows.forEach(function (r, i) {
+      var diff = new Date(r.eta).getTime() - now;
+      if (diff < -60000) return;
+      var mins = Math.round(diff / 60000);
+      var due = diff < 45000;
+      var num = due ? "Due" : mins;
+      var unit = due ? "arriving" : (mins === 1 ? "min" : "min");
+      var rmk = (r.rmk_en || r.rmk_tc || "").trim();
+      html +=
+        '<li class="' + (i === 0 ? "next" : "") + '">' +
+          '<div class="mins">' +
+            '<div class="num' + (due ? " due" : "") + '">' + num + '</div>' +
+            '<div class="unit">' + unit + '</div>' +
+          '</div>' +
+          '<div class="info">' +
+            (i === 0 ? '<span class="tag">Next bus</span><br>' : "") +
+            '<div class="dest">→ Shenzhen Bay Port · 深圳灣口岸</div>' +
+            '<div class="meta">B3A from Fu Tai Estate' + (rmk ? " · " + rmk : "") +
+              (r.eta_seq ? " · run #" + r.eta_seq : "") + '</div>' +
+          '</div>' +
+          '<div class="clock">' + hktTime(r.eta) + '<span>HKT</span></div>' +
+        '</li>';
+    });
+    list.innerHTML = html;
+  }
+
+  $("refreshBtn").addEventListener("click", function () {
+    clearTimeout(timer);
+    state.loading = state.rows.length === 0;
+    loadEta();
+  });
+
+  // 1-second ticker: live countdown + minutes tick down between refreshes
+  setInterval(render, 1000);
+
+  loadMeta();
+  loadEta();
+})();
+</script>
+</body>
+</html>
